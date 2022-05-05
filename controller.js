@@ -1,6 +1,6 @@
 const Boom = require('@hapi/boom');
 const { query } = require('./database');
-const { readableDate } = require('./helpers/dateHelper');
+const { readableDate, escapeText } = require('./helper');
 
 /**
  * Get all users
@@ -61,7 +61,8 @@ async function addComment(request, h) {
             Boom.badRequest();
         }
         // canAddComment === true
-        const { insertId } = await query(`INSERT INTO Comment (userId, text, parentCommentId) VALUES (${userId}, '${text}', ${parentCommentId})`);
+        const queryString = `INSERT INTO Comment (userId, text, parentCommentId) VALUES (${userId}, '${escapeText(text)}', ${parentCommentId})`;
+        const { insertId } = await query(queryString);
         const comment = await query(`SELECT * FROM COMMENT WHERE ID=${insertId}`);
         return h.response(comment[0]);
     } catch (error) {

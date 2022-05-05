@@ -1,3 +1,8 @@
+/**
+ * Returns a human readable version of the DB timestamp
+ * @param timestamp
+ * @returns {string}
+ */
 const readableDate = (timestamp) => {
     const now = Date.now();
     const date = new Date(Date.parse(timestamp));
@@ -28,11 +33,33 @@ const readableDate = (timestamp) => {
     return `a while ago`
 };
 
+/**
+ * Support function for readableDate
+ * Returns the correct singular/plural suffix
+ * @param unit
+ * @param value
+ * @returns {string}
+ */
 const getDateSuffix = (unit, value) => {
     return `${unit}${value>1?'s' : ''} ago`;
 }
 
+/**
+ * Makes text DB safe
+ * @param unsafe
+ * @returns {string}
+ */
+const escapeText = (unsafe) => {
+    return unsafe
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+}
+
 // exposing Ramda object as well for use along with recipes if needed.
 module.exports = {
-    readableDate
+    readableDate,
+    escapeText
 };
