@@ -3,7 +3,10 @@ const readableDate = (timestamp) => {
     const date = new Date(Date.parse(timestamp));
     const millis = now - date;
     const mins = Math.floor(millis / (1000 * 60));
-    if (mins < 60) {
+    if (mins < 1) {
+        return 'just now';
+    }
+    if (2 < mins < 60) {
         return `${mins} mins ago`
     }
     const hours = Math.max(1, Math.floor(mins/60));
