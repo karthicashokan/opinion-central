@@ -1,5 +1,6 @@
 const Boom = require('@hapi/boom');
 const { query } = require('./database');
+const { readableDate } = require('./helpers/dateHelper');
 
 async function getUsers(request, h) {
     request.params.tableName = 'User';
@@ -8,6 +9,7 @@ async function getUsers(request, h) {
 async function getComments(request, h) {
     try {
         const results = await query(`SELECT * FROM Comment ORDER BY date DESC`);
+        results.map((comment) => comment.date = readableDate(comment.date));
         return h.response(results);
     } catch (error) {
         // Step 4: In case of errors return 400 error
