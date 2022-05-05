@@ -6,12 +6,13 @@ async function getUsers(request, h) {
     return getTableContent(request, h);
 }
 async function getComments(request, h) {
-    request.params.tableName = 'Comment';
-    return getTableContent(request, h);
-}
-async function getUpvotes(request, h) {
-    request.params.tableName = 'Upvote';
-    return getTableContent(request, h);
+    try {
+        const results = await query(`SELECT * FROM Comment ORDER BY date DESC`);
+        return h.response(results);
+    } catch (error) {
+        // Step 4: In case of errors return 400 error
+        Boom.boomify(error, { statusCode: 400 });
+    }
 }
 async function getTableContent(request, h) {
     const tableName = request.params.tableName;
@@ -27,7 +28,7 @@ async function getTableContent(request, h) {
 async function addComment(request, h) {
     try {
         // Check if userId and text are present
-        const { userId, text, parentCommentId = null } = JSON.parse(request.payload);
+        const { userId, text, parentCommentId = null } = request.payload;
         const canAddComment = await (async () => {
             if (!userId || !text || text.length === 0) {
                 return false;
@@ -50,7 +51,7 @@ async function addComment(request, h) {
         // canAddComment === true
         const { insertId } = await query(`INSERT INTO Comment (userId, text, parentCommentId) VALUES (${userId}, '${text}', ${parentCommentId})`);
         const comment = await query(`SELECT * FROM COMMENT WHERE ID=${insertId}`);
-        return h.response(comment);
+        return h.response(comment[0]);
     } catch (error) {
         Boom.badRequest();
     }
@@ -59,7 +60,7 @@ async function addComment(request, h) {
 async function addVote(request, h) {
     try {
         // Step 1: Check if userId and commentId are present
-        const { userId, commentId  } = JSON.parse(request.payload);
+        const { userId, commentId  } = request.payload;
         const canUpvote = !userId || !commentId;
         if (!canUpvote) {
             Boom.badRequest();
@@ -83,7 +84,6 @@ module.exports = {
     // List
     getUsers,
     getComments,
-    getUpvotes,
     // Add
     addComment,
     addVote

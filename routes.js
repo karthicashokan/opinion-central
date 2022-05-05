@@ -32,16 +32,6 @@ module.exports = [
         },
         handler: controller.getComments,
     },
-    {
-        method: "GET",
-        path: "/getUpvotes",
-        options: {
-            cors: {
-                origin: ['*'],
-            },
-        },
-        handler: controller.getUpvotes,
-    },
     // Add comment
     {
         method: "POST",
