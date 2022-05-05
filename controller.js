@@ -22,7 +22,7 @@ async function getUsers(request, h) {
 async function getComments(request, h) {
     try {
         const results = await query(`SELECT * FROM Comment ORDER BY date DESC`);
-        results.map((comment) => comment.date = readableDate(comment.date));
+        results.map((comment) => comment.dateFormatted = readableDate(comment.date));
         return h.response(results);
     } catch (error) {
         // Step 4: In case of errors return 400 error
