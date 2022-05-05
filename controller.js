@@ -2,10 +2,23 @@ const Boom = require('@hapi/boom');
 const { query } = require('./database');
 const { readableDate } = require('./helpers/dateHelper');
 
+/**
+ * Get all users
+ * @param request
+ * @param h
+ * @returns {Promise<*|undefined>}
+ */
 async function getUsers(request, h) {
     request.params.tableName = 'User';
     return getTableContent(request, h);
 }
+
+/**
+ * Get all comments
+ * @param request
+ * @param h
+ * @returns {Promise<*|undefined>}
+ */
 async function getComments(request, h) {
     try {
         const results = await query(`SELECT * FROM Comment ORDER BY date DESC`);
@@ -27,6 +40,12 @@ async function getTableContent(request, h) {
     }
 }
 
+/**
+ * Add a new comment
+ * @param request
+ * @param h
+ * @returns {Promise<*|undefined>}
+ */
 async function addComment(request, h) {
     try {
         // Check if userId and text are present
@@ -59,6 +78,12 @@ async function addComment(request, h) {
     }
 }
 
+/**
+ * Marks a vote for a comment
+ * @param request
+ * @param h
+ * @returns {Promise<*|undefined>}
+ */
 async function addVote(request, h) {
     try {
         // Step 1: Check if userId and commentId are present
