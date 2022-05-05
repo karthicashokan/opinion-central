@@ -54,15 +54,6 @@ async function addComment(request, h) {
             if (!userId || !text || text.length === 0) {
                 return false;
             }
-            if (parentCommentId) {
-                // If parentCommentId is present, check if it's valid
-                const parentComment = await query(`SELECT * FROM Comment WHERE id=${parentCommentId}`);
-                if (parentComment && parentComment.id) {
-                    return true
-                } else {
-                    return false
-                }
-            }
             return true;
         })();
         // canAddComment === false
