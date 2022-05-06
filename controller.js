@@ -1,4 +1,5 @@
 const Boom = require('@hapi/boom');
+const Joi = require('@hapi/joi');
 const { query } = require('./database');
 const { readableDate, escapeText } = require('./helper');
 
@@ -13,6 +14,18 @@ async function getUsers(request, h) {
     return getTableContent(request, h);
 }
 
+async function getComment(request, h) {
+    const { commentId } = request.query;
+    if (!commentId) {
+        Boom.badRequest();
+    }
+    try {
+        const comment = JSON.parse(JSON.stringify(await query(`SELECT * FROM Comment WHERE ID=${commentId}`))).pop();
+        return h.response(comment);
+    } catch (error) {
+        Boom.boomify(error, { statusCode: 400 });
+    }
+}
 /**
  * Get all comments
  * @param request
@@ -103,6 +116,7 @@ module.exports = {
     // List
     getUsers,
     getComments,
+    getComment,
     // Add
     addComment,
     addVote

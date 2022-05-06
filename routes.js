@@ -24,6 +24,16 @@ module.exports = [
     },
     {
         method: "GET",
+        path: "/getComment",
+        options: {
+            cors: {
+                origin: ['*'],
+            },
+        },
+        handler: controller.getComment,
+    },
+    {
+        method: "GET",
         path: "/getComments",
         options: {
             cors: {
