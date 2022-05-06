@@ -4,6 +4,13 @@ const { query } = require('./database');
 const { readableDate, escapeText } = require('./helper');
 
 /**
+ * Gets the comment data from DB, for a given commentId
+ * @param commentId
+ * @returns {Promise<any>}
+ */
+const getCommentById = async (commentId) => JSON.parse(JSON.stringify(await query(`SELECT * FROM Comment WHERE ID=${commentId}`))).pop()
+
+/**
  * Get all users
  * @param request
  * @param h
@@ -20,7 +27,7 @@ async function getComment(request, h) {
         Boom.badRequest();
     }
     try {
-        const comment = JSON.parse(JSON.stringify(await query(`SELECT * FROM Comment WHERE ID=${commentId}`))).pop();
+        const comment = await getCommentById(commentId);
         return h.response(comment);
     } catch (error) {
         Boom.boomify(error, { statusCode: 400 });
@@ -76,8 +83,8 @@ async function addComment(request, h) {
         // canAddComment === true
         const queryString = `INSERT INTO Comment (userId, text, parentCommentId) VALUES (${userId}, '${escapeText(text)}', ${parentCommentId})`;
         const { insertId } = await query(queryString);
-        const comment = await query(`SELECT * FROM COMMENT WHERE ID=${insertId}`);
-        return h.response(comment[0]);
+        const comment = await getCommentById(insertId);
+        return h.response(comment);
     } catch (error) {
         Boom.badRequest();
     }
@@ -98,7 +105,7 @@ async function addVote(request, h) {
             Boom.badRequest();
         }
         // Step 2: Check if commentId is valid
-        const comment = JSON.parse(JSON.stringify(await query(`SELECT * FROM Comment WHERE ID=${commentId}`))).pop();
+        const comment = await getCommentById(commentId);
         if (!comment && !comment.id) {
             Boom.badRequest();
         }
