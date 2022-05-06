@@ -2,6 +2,11 @@ const Joi = require('@hapi/joi');
 const controller = require('./controller');
 
 module.exports = [
+    {
+        method: 'GET',
+        path: '/',
+        handler: (request, h) => h.response('Works!')
+    },
     // Serve static files
     {
         method: 'GET',
